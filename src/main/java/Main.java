@@ -13,12 +13,14 @@ import spark.Response;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -26,16 +28,20 @@ import static spark.Spark.*;
 
 public class Main {
 
-    public static final String CALLBACK_URL = "http://localhost:4567/callback";
-    public static final String TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
-
     public static void main(String[] args) throws IOException {
+        Properties properties = new Properties();
+
+        properties.load(new FileInputStream("config.properties"));
+
+        String callbackUrl = properties.getProperty("CALLBACK_URL");
+        String tokenInfoUrl = properties.getProperty("TOKEN_INFO_URL");
+
         MustacheTemplateEngine templateEngine = new MustacheTemplateEngine();
 
         HttpTransport transport = new ApacheHttpTransport();
         JsonFactory jsonFactory = new JacksonFactory();
-        String cliendId = "";
-        String clientSecret = "";
+        String cliendId = properties.getProperty("CLIENT_ID");
+        String clientSecret = properties.getProperty("CLIENT_SECRET");
         Collection<String> scopes = singletonList("email");
         GoogleAuthorizationCodeFlow googleAuth = new GoogleAuthorizationCodeFlow
                 .Builder(transport, jsonFactory, cliendId, clientSecret, scopes)
@@ -57,7 +63,7 @@ public class Main {
                     }
                 } else {
                     String url = googleAuth.newAuthorizationUrl()
-                            .setRedirectUri(CALLBACK_URL)
+                            .setRedirectUri(callbackUrl)
                             .setScopes(scopes)
                             .build();
 
@@ -70,10 +76,13 @@ public class Main {
 
         get("/playground/protected", ((request, response) -> "I'm protected"));
 
-
         get("/callback", ((request, response) -> {
             String code = request.queryParams("code");
-            User user = authenticate(googleAuth, code);
+            User user = authenticate(
+                    googleAuth,
+                    code,
+                    callbackUrl,
+                    tokenInfoUrl);
 
             if (googleAuth.loadCredential(user.getUser_id()) != null) {
                 request.session().attribute("token", user.getUser_id());
@@ -85,12 +94,12 @@ public class Main {
         }));
     }
 
-    private static User authenticate(GoogleAuthorizationCodeFlow googleAuth, String code) throws IOException {
+    private static User authenticate(GoogleAuthorizationCodeFlow googleAuth, String code, String callbackUrl, String tokenInfoUrl) throws IOException {
         GoogleTokenResponse googleResponse = googleAuth.newTokenRequest(code)
-                .setRedirectUri(CALLBACK_URL)
+                .setRedirectUri(callbackUrl)
                 .execute();
 
-        String userInfo = TOKEN_INFO_URL + googleResponse.getAccessToken();
+        String userInfo = tokenInfoUrl + googleResponse.getAccessToken();
         URL url = new URL(userInfo);
         URLConnection conn = url.openConnection();
         String userInfoResponse = new BufferedReader(new InputStreamReader(conn.getInputStream()))
