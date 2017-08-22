@@ -1,29 +1,13 @@
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.MemoryDataStoreFactory;
-import com.google.gson.Gson;
+package com.codurance.oauthPlayground;
+
+import com.codurance.oauthPlayground.infrastructure.Authenticator;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collection;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.singletonList;
-
-class AuthenticationFilter implements Filter {
+public class AuthenticationFilter implements Filter {
 
     private Authenticator authenticator;
 

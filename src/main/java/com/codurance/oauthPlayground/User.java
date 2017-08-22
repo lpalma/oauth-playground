@@ -1,3 +1,5 @@
+package com.codurance.oauthPlayground;
+
 public class User {
 
    private String issuedTo;
