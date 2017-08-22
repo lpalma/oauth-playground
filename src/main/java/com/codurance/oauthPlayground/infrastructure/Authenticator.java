@@ -32,21 +32,29 @@ public class Authenticator {
     public User authenticate(String code) throws IOException {
         GoogleTokenResponse googleResponse = googleAuth.getTokenResponse(googleAuth.callbackUrl(), code);
 
-        String userInfo = TOKEN_INFO_URL + googleResponse.getAccessToken();
-        URL url = new URL(userInfo);
-        URLConnection conn = url.openConnection();
-        String userInfoResponse = new BufferedReader(new InputStreamReader(conn.getInputStream()))
-                .lines()
-                .collect(Collectors.joining("\n"));
-
-        Gson gson = new Gson();
-
-        User user = gson.fromJson(userInfoResponse, User.class);
+        User user = getGoogleUser(googleResponse);
 
         if (user.getEmail().endsWith(CODURANCE_EMAIL)) {
             googleAuth.createAndStoreCredentials(googleResponse, user);
         }
 
         return user;
+    }
+
+    private User getGoogleUser(GoogleTokenResponse googleResponse) throws IOException {
+        String userInfoResponse = fetchGoogleUser(googleResponse);
+
+        Gson gson = new Gson();
+
+        return gson.fromJson(userInfoResponse, User.class);
+    }
+
+    private String fetchGoogleUser(GoogleTokenResponse googleResponse) throws IOException {
+        String userInfo = TOKEN_INFO_URL + googleResponse.getAccessToken();
+        URL url = new URL(userInfo);
+        URLConnection conn = url.openConnection();
+        return new BufferedReader(new InputStreamReader(conn.getInputStream()))
+                .lines()
+                .collect(Collectors.joining("\n"));
     }
 }
