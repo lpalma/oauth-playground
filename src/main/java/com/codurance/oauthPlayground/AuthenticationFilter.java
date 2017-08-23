@@ -19,7 +19,7 @@ public class AuthenticationFilter implements Filter {
     public void handle(Request request, Response response) throws Exception {
         if (this.isNotCallbackUrl(request) && this.isNotAuthenticated(request)) {
             request.session().invalidate();
-            String url = authenticator.getRedirectUrl();
+            String url = authenticator.getLoginUrl();
             response.redirect(url);
         }
     }

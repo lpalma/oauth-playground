@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class Authenticator {
 
     public static final String TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
+    public static final String NEW_LINE = "\n";
     public GoogleOAuthClient googleAuth;
 
     public Authenticator(GoogleOAuthClient client) {
@@ -31,7 +32,7 @@ public class Authenticator {
         return (credential == null) || (credential.getExpiresInSeconds() <= 0);
     }
 
-    public String getRedirectUrl() {
+    public String getLoginUrl() {
          return googleAuth.getNewAuthorizationUrl(googleAuth.callbackUrl());
     }
 
@@ -48,11 +49,11 @@ public class Authenticator {
     }
 
     private User getGoogleUser(GoogleTokenResponse googleResponse) throws IOException {
-        String userInfoResponse = fetchGoogleUser(googleResponse);
+        String tokenInfoResponse = fetchGoogleUser(googleResponse);
 
         Gson gson = new Gson();
 
-        return gson.fromJson(userInfoResponse, User.class);
+        return gson.fromJson(tokenInfoResponse, User.class);
     }
 
     private String fetchGoogleUser(GoogleTokenResponse googleResponse) throws IOException {
@@ -62,6 +63,6 @@ public class Authenticator {
 
         return new BufferedReader(new InputStreamReader(conn.getInputStream()))
                 .lines()
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(NEW_LINE));
     }
 }

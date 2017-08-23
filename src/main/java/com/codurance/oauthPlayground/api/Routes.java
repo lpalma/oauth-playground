@@ -15,10 +15,6 @@ public class Routes {
     public void init(Authenticator authenticator, MustacheTemplateEngine templateEngine, AuthenticationFilter filter) {
         before("/*", filter);
 
-        get("/", (req, res) -> new ModelAndView(new HashMap<>(), "itworks.mustache"), templateEngine);
-
-        get("/playground/protected", ((request, response) -> "I'm protected"));
-
         get("/callback", ((request, response) -> {
             String code = request.queryParams("code");
             User user = authenticator.authenticate(code);
@@ -29,5 +25,10 @@ public class Routes {
 
             return null;
         }));
+
+        get("/", (req, res) -> new ModelAndView(new HashMap<>(), "itworks.mustache"), templateEngine);
+
+        get("/playground/protected", ((request, response) -> "I'm protected"));
+
     }
 }
