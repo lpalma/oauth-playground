@@ -1,6 +1,7 @@
 package com.codurance.oauthPlayground.infrastructure;
 
 import com.codurance.oauthPlayground.User;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.gson.Gson;
 
@@ -22,7 +23,13 @@ public class Authenticator {
     }
 
     public boolean isNotAuthenticated(String token) throws IOException {
-        return token == null || (googleAuth.loadCredentials(token) == null);
+        if (token == null) {
+            return true;
+        }
+
+        Credential credential = googleAuth.loadCredentials(token);
+
+        return (credential == null) || (credential.getExpiresInSeconds() <= 0);
     }
 
     public String getRedirectUrl() {
