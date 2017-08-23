@@ -23,7 +23,7 @@ public class Routes {
             String code = request.queryParams("code");
             User user = authenticator.authenticate(code);
 
-            request.session().attribute("token", user.getUser_id());
+            request.session().attribute("token", user.getUserId());
 
             response.redirect("/");
 

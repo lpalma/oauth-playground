@@ -1,14 +1,24 @@
 package com.codurance.oauthPlayground;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
 
    private String issuedTo;
+
    private String audience;
-   private String user_id;
+
+   @SerializedName("user_id")
+   private String userId;
+
    private String scope;
+
    private int expiresIn;
+
    private String email;
+
    private boolean verifiedEmail;
+
    private String accesType;
 
    public String getIssuedTo() {
@@ -27,12 +37,12 @@ public class User {
       this.audience = audience;
    }
 
-   public String getUser_id() {
-      return user_id;
+   public String getUserId() {
+      return userId;
    }
 
-   public void setUser_id(String user_id) {
-      this.user_id = user_id;
+   public void setUserId(String userId) {
+      this.userId = userId;
    }
 
    public String getScope() {

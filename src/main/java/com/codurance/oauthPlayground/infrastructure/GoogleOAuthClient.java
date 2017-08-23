@@ -59,7 +59,7 @@ public class GoogleOAuthClient {
     }
 
     public Credential createAndStoreCredentials(GoogleTokenResponse googleResponse, User user) throws IOException {
-        return googleAuth.createAndStoreCredential(googleResponse, user.getUser_id());
+        return googleAuth.createAndStoreCredential(googleResponse, user.getUserId());
     }
 
     public String callbackUrl() {
