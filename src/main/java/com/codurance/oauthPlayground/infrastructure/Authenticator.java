@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 public class Authenticator {
 
     public static final String TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
-    public static final String CODURANCE_EMAIL = "@codurance.com";
     public GoogleOAuthClient googleAuth;
 
     public Authenticator(GoogleOAuthClient client) {
@@ -41,7 +40,7 @@ public class Authenticator {
 
         User user = getGoogleUser(googleResponse);
 
-        if (user.getEmail().endsWith(CODURANCE_EMAIL)) {
+        if (user.isFromCodurance()) {
             googleAuth.createAndStoreCredentials(googleResponse, user);
         }
 
@@ -60,6 +59,7 @@ public class Authenticator {
         String userInfo = TOKEN_INFO_URL + googleResponse.getAccessToken();
         URL url = new URL(userInfo);
         URLConnection conn = url.openConnection();
+
         return new BufferedReader(new InputStreamReader(conn.getInputStream()))
                 .lines()
                 .collect(Collectors.joining("\n"));

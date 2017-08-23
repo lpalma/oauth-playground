@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
 
+   private static final String CODURANCE_EMAIL = "@codurance.com";
+
    private String issuedTo;
 
    private String audience;
@@ -84,4 +86,8 @@ public class User {
    public void setAccesType(String accesType) {
       this.accesType = accesType;
    }
+
+    public boolean isFromCodurance() {
+        return getEmail().endsWith(CODURANCE_EMAIL);
+    }
 }
